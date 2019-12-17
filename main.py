@@ -121,10 +121,15 @@ def compute_rule(curve, rule_str, curve_type):
         else:
             point1 = Point(x, y)
         coefficient = create_polynomial(arg2)
-        return mul_points(curve, point1, coefficient, curve_type)
+        infinity = Point("O", "O")
+        return fast_multiply(curve, coefficient, infinity, point1, curve_type)
 
 
 def sum_points(curve, point1, point2, curve_type):
+    if point1.x == "O" and point1.y == "O":
+        return point2
+    if point2.x == "O" and point2.y == "O":
+        return point1
     if curve_type == 0:
        return sum_z_points(curve, point1, point2)
     else:
@@ -184,6 +189,19 @@ def mul_points(curve, point1, point2, curve_type):
     result = point1
     for i in range(0, point2 - 1):
         result = sum_points(curve, point1, result, curve_type)
+    return result
+
+
+def fast_multiply(curve, count, start, point, curve_type):
+    result = start
+    addend = point
+
+    while count:
+        if count & 1:
+            result = sum_points(curve, result, addend, curve_type)
+        addend = sum_points(curve, addend, addend, curve_type)
+        count >>= 1
+
     return result
 
 
