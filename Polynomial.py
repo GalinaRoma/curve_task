@@ -49,22 +49,23 @@ class Polynomial:
     def clone(self):
         return Polynomial(self.bits)
 
-    def inverse(self, b):
-        p1, p2 = self.clone(), b.clone()
-        x1, x2 = Polynomial(1), Polynomial(0)
+    def _polydiv(self, divisor):
+        quotient = Polynomial(0)
+        remainder = self.clone()
+        while len(remainder) >= len(divisor):
+            product = Polynomial(1 << (len(remainder) - len(divisor)))
+            quotient += product
+            remainder += product * divisor
 
-        while p2 != 1:
-            p1_len = len(p1)
-            p2_len = len(p2)
+        return quotient
 
-            if p1_len == p2_len:
-                p1, p2 = p2, p1 + p2
-                x1, x2 = x2, x1 + x2
-            elif p1_len < p2_len:
-                p1, p2 = p2, (p1 << (p2_len - p1_len)) + p2
-                x1, x2 = x2, (x1 << (p2_len - p1_len)) + x2
-            else:
-                p1, p2 = p2, (p2 << (p1_len - p2_len)) + p1
-                x1, x2 = x2, (x2 << (p1_len - p2_len)) + x1
+    def invert(self, p):
+        old_t, t = Polynomial(0), Polynomial(1)
+        old_r, r = p, self.clone()
+        while r != Polynomial(0):
+            quotient = old_r._polydiv(r)
+            old_r, r = r, old_r + quotient * r
+            old_t, t = t, old_t + quotient * t
 
-        return x2 % b
+        assert old_r.bits == 1  # old_r is the gcd
+        return old_t % p

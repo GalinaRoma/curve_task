@@ -171,7 +171,7 @@ def sum_z_points(curve, point1, point2):
 
 def sum_gf_points(curve, point1, point2):
     if point1.x != point2.x:
-        k = ((point2.y + point1.y) * (point2.x + point1.x).inverse(curve.polynomial)) % curve.polynomial
+        k = ((point2.y + point1.y) * (point2.x + point1.x).invert(curve.polynomial)) % curve.polynomial
         x3 = (k * k + curve.a * k + curve.b - point1.x - point2.x) % curve.polynomial
         y3 = (point1.y + k * (x3 - point1.x)) % curve.polynomial
         return Point(x3, curve.a * x3 + y3)
@@ -179,7 +179,7 @@ def sum_gf_points(curve, point1, point2):
         if point2.y == curve.a * point1.x + point1.y % curve.polynomial:
             return Point("O", "O")
         else:
-            k = ((point1.x * point1.x + curve.a * point1.y) * (curve.a * point1.x).inverse(curve.polynomial)) % curve.polynomial
+            k = ((point1.x * point1.x + curve.a * point1.y) * (curve.a * point1.x).invert(curve.polynomial)) % curve.polynomial
             x3 = (k * k + curve.a * k + curve.b - point1.x - point2.x) % curve.polynomial
             y3 = (point1.y + k * (x3 - point1.x)) % curve.polynomial
             return Point(x3, curve.a * x3 + y3)

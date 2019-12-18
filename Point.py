@@ -5,5 +5,5 @@ class Point:
 
     def __str__(self):
         if self.x == "O":
-            return "O"
+            return "Infinity point"
         return str(self.x) + "," + str(self.y)
